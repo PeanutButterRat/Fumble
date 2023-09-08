@@ -1,4 +1,5 @@
 import functools
+from bson.objectid import ObjectId
 
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, session, url_for
@@ -67,7 +68,7 @@ def login():
 
         if error is None:
             session.clear()
-            session['user_id'] = user['_id']
+            session['user_id'] = str(user['_id'])
             return redirect(url_for('index'))
 
         flash(error)
@@ -79,3 +80,13 @@ def login():
 def logout():
     session.clear()
     return redirect(url_for('index'))
+
+
+@bp.before_app_request
+def load_logged_in_user():
+    user_id = session.get('user_id')
+
+    if user_id is None:
+        g.user = None
+    else:
+        g.user = db.users.find_one({'_id': ObjectId(session['user_id'])})
