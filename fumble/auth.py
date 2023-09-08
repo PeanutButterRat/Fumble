@@ -1,5 +1,4 @@
 import functools
-from bson.objectid import ObjectId
 
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, session, url_for
@@ -35,18 +34,16 @@ def register():
             error = 'Password is required.'
 
         if error is None:
-            if not db.users.find_one({'username': username}):
-                result = db.users.insert_one({
-                    'username': username,
-                    'password': generate_password_hash(password)
-                })
-
-                if result:
-                    return redirect(url_for("auth.login"))
-                else:
-                    error = "User registration failed."
+            try:
+                db.execute(
+                    'INSERT INTO user (username, password) VALUES (?, ?)',
+                    (username, generate_password_hash(password)),
+                )
+                db.commit()
+            except db.IntegrityError:
+                error = f'User {username} is already registered.'
             else:
-                error = f"User {username} is already registered."
+                return redirect(url_for('auth.login'))
 
         flash(error)
 
@@ -59,7 +56,10 @@ def login():
         username = request.form['username']
         password = request.form['password']
         error = None
-        user = db.users.find_one({'username': username})
+
+        user = db.execute(
+            'SELECT * FROM user WHERE username = ?', (username,)
+        ).fetchone()
 
         if user is None:
             error = 'Incorrect username.'
@@ -68,7 +68,7 @@ def login():
 
         if error is None:
             session.clear()
-            session['user_id'] = str(user['_id'])
+            session['user_id'] = user['id']
             return redirect(url_for('index'))
 
         flash(error)
@@ -89,4 +89,6 @@ def load_logged_in_user():
     if user_id is None:
         g.user = None
     else:
-        g.user = db.users.find_one({'_id': ObjectId(session['user_id'])})
+        g.user = db.execute(
+            'SELECT * FROM user WHERE id = ?', (user_id,)
+        ).fetchone()

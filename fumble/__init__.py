@@ -1,20 +1,17 @@
 import os.path
-import configparser
 
 from flask_socketio import SocketIO
 from flask import Flask
 
 
 socketio = SocketIO(asynch_mode='eventlet')
-config = configparser.ConfigParser()
-config.read(os.path.abspath(os.path.join(os.getcwd(), '.ini')))
 
 
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
     app.config.from_mapping(
         SECRET_KEY='dev',
-        MONGO_URI=config['PROD']['DB_URI']
+        DATABASE=os.path.join(app.instance_path, 'fumble.sqlite')
     )
 
     if test_config is None:
@@ -29,6 +26,9 @@ def create_app(test_config=None):
 
     socketio.init_app(app)
 
+    from . import db
+    db.init_app(app)
+
     from . import auth
     app.register_blueprint(auth.bp)
 
@@ -37,4 +37,3 @@ def create_app(test_config=None):
     app.add_url_rule('/', endpoint='index')
 
     return app
-

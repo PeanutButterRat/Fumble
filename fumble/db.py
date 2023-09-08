@@ -1,16 +1,43 @@
-from flask import g, current_app
+import sqlite3
+import click
+
 from werkzeug.local import LocalProxy
-from pymongo import MongoClient
+
+from flask import current_app, g
 
 
 def get_db():
-    database = getattr(g, "_database", None)
+    if 'db' not in g:
+        g.db = sqlite3.connect(
+            current_app.config['DATABASE'],
+            detect_types=sqlite3.PARSE_DECLTYPES
+        )
+        g.db.row_factory = sqlite3.Row
 
-    if database is None:
-        client = MongoClient(current_app.config['MONGO_URI'])
-        database = g._database = client['fumble']
+    return g.db
 
-    return database
+
+def close_db(e=None):
+    database = g.pop('db', None)
+    if database is not None:
+        database.close()
+
+
+def init_db():
+    database = get_db()
+    with current_app.open_resource('schema.sql') as f:
+        database.executescript(f.read().decode('utf8'))
+
+
+@click.command('init-db')
+def init_db_command():
+    init_db()
+    click.echo('Initialized the database.')
+
+
+def init_app(app):
+    app.teardown_appcontext(close_db)
+    app.cli.add_command(init_db_command)
 
 
 db = LocalProxy(get_db)

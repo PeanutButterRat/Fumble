@@ -4,7 +4,6 @@ from flask import (
 from werkzeug.exceptions import abort
 
 from fumble.auth import login_required
-from fumble.db import db
 
 bp = Blueprint('blog', __name__)
 
@@ -19,9 +18,7 @@ def index():
 @login_required
 def new():
     username = request.form['username']
-
-    print(f'Creating with {username}')
-
+    print(f'Creating chat with {username}')
     return redirect(url_for('blog.index'))
 
 
