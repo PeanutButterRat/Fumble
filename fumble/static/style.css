@@ -133,7 +133,6 @@ input[type=submit] {
   min-width: 10em;
 }
 
-/* Styles for the popup container */
 .popup {
     display: none;
     position: fixed;
@@ -142,7 +141,7 @@ input[type=submit] {
     top: 0;
     width: 100%;
     height: 100%;
-    overflow: auto;
+    margin: auto;
     background-color: rgba(0, 0, 0, 0.4);
 }
 
@@ -151,13 +150,12 @@ input[type=submit] {
     margin: auto;
 }
 
-.popup input[type="text"] {
+#searchBar {
     width: 100%;
     padding: 10px;
     margin: 10px auto;
 }
 
-/* Close button */
 .close {
     position: absolute;
     top: 10px;
@@ -166,10 +164,11 @@ input[type=submit] {
     cursor: pointer;
 }
 
-/* Styles for the search results */
 #searchResults {
     list-style-type: none;
-    padding: 0;
+    padding: 10px;
+    width: 100%;
+    margin: auto;
 }
 
 #searchResults li {

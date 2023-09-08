@@ -1,11 +1,12 @@
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, url_for
+    Blueprint, flash, g, redirect, render_template, request, url_for, jsonify
 )
 from werkzeug.exceptions import abort
 
 from fumble.auth import login_required
+from fumble.db import db
 
-bp = Blueprint('blog', __name__)
+bp = Blueprint('chat', __name__)
 
 
 @bp.route('/')
@@ -22,5 +23,11 @@ def new():
     return redirect(url_for('blog.index'))
 
 
-def get_users():
-    pass
+@bp.route('/usernames', methods=('GET',))
+@login_required
+def get_usernames():
+    prefix = request.args.get('prefix', '')
+    rows = db.execute("SELECT * FROM user WHERE username LIKE ? || '%'", (prefix,))
+    usernames = [row['username'] for row in filter(lambda r: r['id'] != g.user['id'], rows)]
+
+    return jsonify({'usernames': usernames})
