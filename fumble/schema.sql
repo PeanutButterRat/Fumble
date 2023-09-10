@@ -1,4 +1,3 @@
-DROP TABLE IF EXISTS chat;
 DROP TABLE IF EXISTS user;
 DROP TABLE IF EXISTS message;
 
@@ -11,13 +10,9 @@ CREATE TABLE user (
 CREATE TABLE message (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   author INTEGER NOT NULL,
+  recipient INTEGER NOT NULL,
   created TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   body TEXT NOT NULL,
-  FOREIGN KEY (author) REFERENCES user (id)
-);
-
-CREATE TABLE chat (
-  first_user INTEGER REFERENCES user,
-  second_user INTEGER REFERENCES user,
-  PRIMARY KEY (first_user, second_user)
+  FOREIGN KEY (author) REFERENCES user (id),
+  FOREIGN KEY (recipient) REFERENCES user (id)
 );

@@ -1,7 +1,6 @@
 from flask import (
-    Blueprint, flash, g, redirect, render_template, request, url_for, jsonify
+    Blueprint, session, g, render_template, request, jsonify, flash, redirect, url_for
 )
-from werkzeug.exceptions import abort
 
 from fumble.auth import login_required
 from fumble.db import db
@@ -15,12 +14,23 @@ def index():
     return render_template('chat/index.html')
 
 
-@bp.route('/new', methods=('POST',))
+@bp.route('/new', methods=('GET',))
 @login_required
-def new():
-    username = request.form['username']
-    print(f'Creating chat with {username}')
-    return redirect(url_for('blog.index'))
+def new_chat():
+    username = request.args.get('username', '')
+    if not username:
+        return f'Username required.', 400
+
+    user = db.execute('SELECT * FROM user WHERE username = ?', (username,)).fetchone()
+    if user is None:
+        return f'No user with name {username} exists!', 404
+
+    names = sorted([g.user['username'], username])
+    room = ''.join(names)
+
+    return jsonify({
+        'room': room,
+    })
 
 
 @bp.route('/usernames', methods=('GET',))
