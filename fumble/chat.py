@@ -1,43 +1,52 @@
 from flask import (
-    Blueprint, session, g, render_template, request, jsonify, flash, redirect, url_for
+    Blueprint, render_template, request, redirect, url_for, g
 )
+from flask_socketio import leave_room, join_room, rooms
 
 from fumble.auth import login_required
-from fumble.db import db
+from . import socketio
 
 bp = Blueprint('chat', __name__)
+available_rooms = set()
 
 
-@bp.route('/')
+@bp.route('/', methods=('GET', 'POST'))
 @login_required
 def index():
-    return render_template('chat/index.html')
+    if request.method == 'GET':
+        return render_template('chat/index.html', rooms=list(available_rooms))
+
+    return redirect(url_for('chat.join', room=request.form['room']))
 
 
-@bp.route('/new', methods=('GET',))
+@bp.route('/<string:room>', methods=('GET',))
 @login_required
-def new_chat():
-    username = request.args.get('username', '')
-    if not username:
-        return f'Username required.', 400
+def join(room):
+    if room is None:
+        return redirect(url_for('chat.index'))
 
-    user = db.execute('SELECT * FROM user WHERE username = ?', (username,)).fetchone()
-    if user is None:
-        return f'No user with name {username} exists!', 404
-
-    names = sorted([g.user['username'], username])
-    room = ''.join(names)
-
-    return jsonify({
-        'room': room,
-    })
+    return render_template('chat/room.html', room=room)
 
 
-@bp.route('/usernames', methods=('GET',))
-@login_required
-def get_usernames():
-    prefix = request.args.get('prefix', '')
-    rows = db.execute("SELECT * FROM user WHERE username LIKE ? || '%'", (prefix,))
-    usernames = [row['username'] for row in filter(lambda r: r['id'] != g.user['id'], rows)]
+@socketio.on('join')
+def on_join(data):
+    username = data['username']
+    room = data['room']
 
-    return jsonify({'usernames': usernames})
+    for r in rooms():
+        leave_room(r)
+
+    join_room(room)
+
+    if room not in available_rooms:
+        available_rooms.add(room)
+
+    socketio.send(f'{username} has entered the room.', to=room)
+
+
+@socketio.on('message')
+def on_message(data):
+    username = data['username']
+    room = data['room']
+    message = data['message']
+    socketio.send(f'{username}: {message}', to=room)

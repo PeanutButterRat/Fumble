@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}{{ room }}{% endblock %}</h1>
+  <a class="action" href="/">Return Home</a>
+{% endblock %}
+{% block content %}
+  <p id="history"></p>
+  <input name="room" id="message" placeholder="Message" required>
+  <input type="submit" value="Send" onclick="onSubmit()">
+  <script src="https://cdn.socket.io/4.6.0/socket.io.min.js" integrity="sha384-c79GN5VsunZvi+Q/WObgk2in0CbZsHnjEqvFxC5DxHn9lTfNce2WW6h2pH6u/kF+" crossorigin="anonymous"></script>
+  <script>
+    const socket = io();
+    io.connect('/');
+    socket.on('message', (message) => {
+      let history = document.getElementById('history');
+      let p = document.createElement('p');
+      p.innerHTML = message;
+      history.append(p);
+    });
+    socket.emit('join', { room: '{{ room }}', username: '{{ g.user['username'] }}'});
+
+    function onSubmit() {
+      let text = message.value;
+      message.value = '';
+      socket.emit('message', { message: text, room: '{{ room }}', username: '{{ g.user['username'] }}'});
+    }
+  </script>
+{% endblock %}
