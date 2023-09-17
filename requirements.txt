@@ -1,0 +1,7 @@
+pip~=21.3.1
+wheel~=0.37.1
+Jinja2~=3.1.2
+setuptools~=60.2.0
+click~=8.1.7
+werkzeug~=2.3.7
+flask~=2.3.3
