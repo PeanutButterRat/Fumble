@@ -1,0 +1,12 @@
+[project]
+name = "Fumble"
+version = "1.0.0"
+description = "Basic group messaging application."
+dependencies = [
+    "flask",
+    "Flask-SocketIO"
+]
+
+[build-system]
+requires = ["flit_core<4"]
+build-backend = "flit_core.buildapi"
