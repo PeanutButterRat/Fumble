@@ -59,7 +59,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Fumble Screen Shot][product-screenshot]](/asset/login.png)
+![Fumble Screen Shot](/assets/login.png)
 
 Fumble is a web-based messaging platform that uses Flask and SocketIO for real-time group messaging. I built it to get more full-stack experience under my belt and get more comfortable utilizing web services. At the end, I deployed it to a free AWS instance to round out the project with a bit of DevOps experience as well. 
 
@@ -125,18 +125,15 @@ _Note: Although Flask will be running locally, you can still play around with si
 
 To start chatting, first navigate to the top right link to create an account. After doing so, you will automatically be redirected to log in.
 
-[Log In](/assets/login.png)
+![Log In](/assets/login.png)
 
 Once you are on the main dashboard, you can click a room to join one that is already created or make a new one.
 
-[Rooms](/assets/login.png)
+![Rooms](/assets/rooms.png)
 
 Once you are in a room, just type a message to send it to everyone else!
 
-[Chat](/assets/chat.png)
-
-
-_For more examples, please refer to the [Documentation](https://example.com)_
+![Chat](/assets/chat.png)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -144,7 +141,7 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 <!-- CONTRIBUTING -->
 ## Contributing
 
-If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with and present your idea there. I don't forsee anyone feeling inspired enough to contribute, but any contributions are greatly appreciated if you do decide to!
+If you have a suggestion that would make this better, please fork the repo and create a pull request. You can also simply open an issue with and present your idea there. I don't forsee anyone feeling inspired enough to contribute, but any contributions are greatly appreciated if you do decide to do so!
 
 1. Fork the Project
 2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
@@ -213,6 +210,6 @@ Here are some awesome resources that were crucial to the development to this app
 <!-- DEMO -->
 ## Demo
 
-https://github.com/PeanutButterRat/Fumble/blob/main/assets/demo.mp4
+https://github.com/PeanutButterRat/Fumble/assets/81714784/39a7e7c5-d105-4f4c-98ee-b3b9229cba68
 
 Press play to watch a short application demo.
