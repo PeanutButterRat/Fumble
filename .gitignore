@@ -143,3 +143,5 @@ cython_debug/
 
 # Mongo DB ini file
 /.ini
+
+/.idea
