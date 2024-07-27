@@ -7,6 +7,8 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 from fumble.db import db
 
+from pyotp import random_base32, totp
+
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 
 
@@ -43,7 +45,9 @@ def register():
             except db.IntegrityError:
                 error = f'User {username} is already registered.'
             else:
-                return redirect(url_for('auth.login'))
+                setup_key = random_base32()
+                mfa_url = totp.TOTP(setup_key).provisioning_uri(name=username, issuer_name='Fumble')
+                return render_template('auth/mfa.html', mfa_url=mfa_url, setup_key=setup_key)
 
         flash(error)
 
