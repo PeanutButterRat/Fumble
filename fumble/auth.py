@@ -37,17 +37,19 @@ def register():
 
         if error is None:
             try:
+                setup_key = random_base32()
                 db.execute(
-                    'INSERT INTO user (username, password) VALUES (?, ?)',
-                    (username, generate_password_hash(password)),
+                    'INSERT INTO user (username, password, mfa_secret) VALUES (?, ?, ?)',
+                    (username, generate_password_hash(password), setup_key),
                 )
                 db.commit()
             except db.IntegrityError:
                 error = f'User {username} is already registered.'
             else:
-                setup_key = random_base32()
+                session['username'] = username
+                session['mfa_secret'] = setup_key
                 mfa_url = totp.TOTP(setup_key).provisioning_uri(name=username, issuer_name='Fumble')
-                return render_template('auth/mfa.html', mfa_url=mfa_url, setup_key=setup_key)
+                return render_template('mfa/setup.html', mfa_url=mfa_url, setup_key=setup_key)
 
         flash(error)
 
@@ -71,13 +73,47 @@ def login():
             error = 'Incorrect password.'
 
         if error is None:
-            session.clear()
-            session['user_id'] = user['id']
-            return redirect(url_for('index'))
+            session['username'] = user['username']
+            print('FUNNY')
+            return redirect(url_for('auth.mfa'))
 
         flash(error)
 
     return render_template('auth/login.html')
+
+
+@bp.route('/mfa', methods=('GET', 'POST'))
+def mfa():
+    if request.method == 'POST':
+        if 'username' not in session:
+            flash('User has not logged in.')
+            return redirect(url_for('auth.login'))
+
+        code = request.form['code']
+
+        if not code:
+            flash('Verification code is required.')
+            return render_template('auth/challenge.html')
+
+        matches, user = verify(code, session['username'])
+
+        if matches:
+            session.clear()
+            session['user_id'] = user['id']
+            return redirect(url_for('index'))
+
+        flash('Verification code does not match.')
+
+    return render_template('mfa/challenge.html')
+
+
+def verify(code, username):
+    user = db.execute(
+        'SELECT * FROM user WHERE username = ?', (username,)
+    ).fetchone()
+    secret_key = user['mfa_secret']
+
+    return code == totp.TOTP(secret_key).now(), user
 
 
 @bp.route('/logout')

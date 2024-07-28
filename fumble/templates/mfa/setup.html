@@ -6,6 +6,7 @@
 
 {% block content %}
   <ol>
+    <h3>Instructions:</h3>
     <li>
       Download
       <a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&hl=en&gl=US" target="_blank">
@@ -13,14 +14,12 @@
       </a>
       or a similar MFA application on your mobile device.</li>
     <li>Open the app and scan the QR code or manually enter the setup key and select <b>Time based</b>.</li>
-    <li>Enter the verification code down below and click <b>Register</b> to complete your registration.</li>
+    <li>Enter the verification code down below and click <b>Finished</b> to complete your registration.</li>
   </ol>
 
   <img src="{{ qrcode(mfa_url) }}">
   <p>Setup Key: {{ setup_key }}</p>
-  <form method="post">
-    <label for="code">One-time Code</label>
-    <input name="code" id="code" required>
-    <input type="submit" value="Register">
-  </form>
+  <a href="/login">
+    <button>Finished</button>
+  </a>
 {% endblock %}
