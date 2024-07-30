@@ -1,10 +1,15 @@
 [project]
 name = "Fumble"
 version = "1.0.0"
-description = "Basic group messaging application."
+description = "A no-nonsense full-stack group messaging application."
 dependencies = [
     "flask",
-    "Flask-SocketIO"
+    "Flask-SocketIO",
+    "flask_qrcode",
+    "pyotp",
+    "pymongo",
+    "flask_qrcode",
+    "werkzeug"
 ]
 
 [build-system]

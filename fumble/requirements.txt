@@ -1,5 +1,0 @@
-Flask
-flask_qrcode
-pyotp
-pymongo
-werkzeug
