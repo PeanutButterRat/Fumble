@@ -2,6 +2,7 @@ import os.path
 
 from flask_socketio import SocketIO
 from flask import Flask
+from flask_qrcode import QRcode
 
 
 socketio = SocketIO(asynch_mode='eventlet')
@@ -25,6 +26,7 @@ def create_app(test_config=None):
         pass
 
     socketio.init_app(app)
+    QRcode(app)
 
     from . import db
     db.init_app(app)

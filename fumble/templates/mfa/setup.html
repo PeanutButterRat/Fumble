@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %}Register{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+  <ol>
+    <li>
+      Download
+      <a href="https://play.google.com/store/apps/details?id=com.google.android.apps.authenticator2&hl=en&gl=US" target="_blank">
+        Google Authenticator
+      </a>
+      or a similar MFA application on your mobile device.</li>
+    <li>Open the app and scan the QR code or manually enter the setup key and select <b>Time based</b>.</li>
+    <li>Enter the verification code down below and click <b>Finished</b> to complete your registration.</li>
+  </ol>
+
+  <img src="{{ qrcode(mfa_url) }}">
+  <p>Setup Key: {{ setup_key }}</p>
+  <a href="/login">
+    <button>Finished</button>
+  </a>
+{% endblock %}
