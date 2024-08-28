@@ -2,6 +2,7 @@ import os
 import tempfile
 
 import pytest
+from pyotp import totp
 from fumble import create_app
 from fumble.db import get_db, init_db
 
@@ -36,3 +37,29 @@ def client(app):
 @pytest.fixture
 def runner(app):
     return app.test_cli_runner()
+
+
+class AuthActions(object):
+    def __init__(self, client):
+        self._client = client
+
+    def login(self, username='test', password='test', mfa_secret='UL76UNQ3PAIZEBLPAUK4MEQQCSPM3Y5B'):
+        self._client.post(
+            '/auth/login',
+            data={'username': username, 'password': password}
+        )
+
+        return self._client.post(
+            '/auth/mfa',
+            data={
+                'code': totp.TOTP(mfa_secret).now()
+            }
+        )
+
+    def logout(self):
+        return self._client.get('/auth/logout')
+
+
+@pytest.fixture
+def auth(client):
+    return AuthActions(client)
