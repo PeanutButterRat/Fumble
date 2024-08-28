@@ -51,9 +51,7 @@ class AuthActions(object):
 
         return self._client.post(
             '/auth/mfa',
-            data={
-                'code': totp.TOTP(mfa_secret).now()
-            }
+            data={'code': totp.TOTP(mfa_secret).now()}
         )
 
     def logout(self):
