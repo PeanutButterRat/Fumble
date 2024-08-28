@@ -9,7 +9,9 @@ dependencies = [
     "pyotp",
     "pymongo",
     "flask_qrcode",
-    "werkzeug"
+    "werkzeug",
+    "pytest",
+    "coverage"
 ]
 
 [build-system]
