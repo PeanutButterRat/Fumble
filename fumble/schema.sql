@@ -4,5 +4,5 @@ CREATE TABLE user (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   username TEXT UNIQUE NOT NULL,
   password TEXT NOT NULL,
-  mfa_secret TEXT NOT NULL,
+  mfa_secret TEXT NOT NULL
 );
