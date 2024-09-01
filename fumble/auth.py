@@ -74,7 +74,6 @@ def login():
 
         if error is None:
             session['username'] = user['username']
-            print('FUNNY')
             return redirect(url_for('auth.mfa'))
 
         flash(error)
